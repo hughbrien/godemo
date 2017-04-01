@@ -7,6 +7,9 @@ import (
 	"github.com/hughbrien/godemo/stringutils"
 	"github.com/instana/golang-sensor"
 	ot "github.com/opentracing/opentracing-go"
+	"golang.org/x/net/context"
+
+
 )
 
 const (
@@ -17,10 +20,34 @@ const (
 
 var demoOptions instana.Options
 
+var FirstName string
+var LastName string
+var MiddleName string
+var DateOfBirth time.Time
+var DemoContext context.Context
+
+
+
 
 func main() {
 
-	fmt.Print ( " # # # # # # Starting CORE # # # # # # " )
+	FirstName = "Hugh"
+	MiddleName = "Plunkett"
+	LastName = "Brien"
+	DateOfBirth = time.Now()
+
+
+	thisBannerFunc := func (stringValue string) string {
+	return " # # # # # # # # # " +
+		stringValue +
+		"# # # # # # # # # # "
+	}
+
+
+
+
+	fmt.Println(thisBannerFunc("Starting COR"))
+
 
 	opts := instana.Options {
 		Service: Service,
@@ -29,8 +56,15 @@ func main() {
 
 	ot.InitGlobalTracer(instana.NewTracerWithOptions(&opts))
 
+
+	DemoContext = context.WithValue(context.Background(), "Foo", "Bar")
+
+	fmt.Println(DemoContext)
+
 	//Span span  = ot.StartSpanFromContext(c)
-	fmt.Println ("Starting on port 8080")
+	fmt.Println(stringutils.Banner("Starting on port 8080"))
+
+
 	myMux := http.NewServeMux()
 	myMux.HandleFunc("/", catchall)
 	myMux.HandleFunc("/service", demoservice)
@@ -43,6 +77,7 @@ func main() {
 
 
 func catchall (w http.ResponseWriter, req *http.Request) {
+
 	demoOptions = instana.Options{"hostname","",0,0}
 	second := time.Second
 	miliseconds := int64(second/time.Millisecond)
@@ -61,11 +96,14 @@ func catchall (w http.ResponseWriter, req *http.Request) {
 }
 
 
-
-
 func printPage( w http.ResponseWriter){
 
-	w.Write([]byte ("<h1>This is the first Text from the the Application Server</h1>"))
+	DateOfBirth = time.Now()
+	extraResult := FirstName + " " + LastName
+	w.Write([]byte ("<h1>"))
+	w.Write([]byte (extraResult))
+	w.Write([]byte ("This is the first Text from the the Application Server</h1>") )
+
 
 }
 
