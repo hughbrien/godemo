@@ -1,10 +1,5 @@
 package logger
 
-
-import (
-l "log"
-)
-
 const (
 	Error = 0
 	Warn  = 1
@@ -13,7 +8,4 @@ const (
 )
 
 type logS struct {
-
 }
-
-
